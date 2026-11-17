@@ -117,6 +117,17 @@ function crearServicioReservasMongo() {
     return resultado.deletedCount === 1; // true si borró algo, false si no
   }
 
+  async function consultar(sala) {
+    const filtro = {};
+
+    if (sala !== undefined) {
+      filtro.sala = sala.trim();
+    }
+
+    const documentos = await Reserva.find(filtro).lean();
+    return documentos.map(representarReserva);
+  }
+
   return {
     listar,
     contar,
@@ -125,6 +136,7 @@ function crearServicioReservasMongo() {
     reemplazar,
     actualizar,
     eliminar,
+    consultar,
   };
 }
 
