@@ -47,9 +47,8 @@ function crearControladorReservas(servicioReservas) {
 
   // Controladores JSON (API)
   async function listarApi(req, res) {
-    const permitidos = ["sala"];
+    const permitidos = ["sala", "orden"]; // <-- Añadido orden
 
-    // Rechazar parámetros desconocidos
     for (const campo of Object.keys(req.query)) {
       if (!permitidos.includes(campo)) {
         return res.status(400).json({ error: "Parámetro no permitido." });
@@ -57,15 +56,23 @@ function crearControladorReservas(servicioReservas) {
     }
 
     const sala = req.query.sala;
-
     if (sala !== undefined) {
-      // Rechazar si llega vacío o si llega repetido (como arreglo)
       if (typeof sala !== "string" || sala.trim() === "") {
         return res.status(400).json({ error: "El filtro de sala debe ser un texto válido y no vacío." });
       }
     }
 
-    const resultado = await servicioReservas.consultar(sala);
+    let orden = "estudiante"; // <-- Predeterminado
+    if (req.query.orden !== undefined) {
+      orden = req.query.orden;
+      // Rechazamos órdenes inventados
+      if (orden !== "estudiante" && orden !== "personas-asc" && orden !== "personas-desc") {
+        return res.status(400).json({ error: "Orden no permitido." });
+      }
+    }
+
+    // Pasamos ambos argumentos al servicio
+    const resultado = await servicioReservas.consultar(sala, orden);
     res.json(resultado);
   }
 
