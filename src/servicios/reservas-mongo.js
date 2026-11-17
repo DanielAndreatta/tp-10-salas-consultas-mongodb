@@ -138,7 +138,9 @@ function crearServicioReservasMongo() {
     const paginas = Math.ceil(total / limite);
 
     // Agregamos skip y limit a la cadena de consulta
+    // Agregamos select para pedir solo los campos públicos y el _id (necesario para el mapeo)
     const documentos = await Reserva.find(filtro)
+      .select("estudiante email sala fecha turno personas estado _id") // <-- Línea nueva
       .sort(ordenMongo)
       .skip(salto)
       .limit(limite)
