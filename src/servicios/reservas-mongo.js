@@ -152,7 +152,7 @@ function crearServicioReservasMongo() {
       pagina: pagina,
       limite: limite,
       total: total,
-      paginas: paginas
+      paginas: paginas,
     };
   }
 

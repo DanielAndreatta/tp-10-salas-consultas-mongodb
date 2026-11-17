@@ -58,14 +58,20 @@ function crearControladorReservas(servicioReservas) {
     const sala = req.query.sala;
     if (sala !== undefined) {
       if (typeof sala !== "string" || sala.trim() === "") {
-        return res.status(400).json({ error: "El filtro de sala debe ser un texto válido y no vacío." });
+        return res.status(400).json({
+          error: "El filtro de sala debe ser un texto válido y no vacío.",
+        });
       }
     }
 
     let orden = "estudiante";
     if (req.query.orden !== undefined) {
       orden = req.query.orden;
-      if (orden !== "estudiante" && orden !== "personas-asc" && orden !== "personas-desc") {
+      if (
+        orden !== "estudiante" &&
+        orden !== "personas-asc" &&
+        orden !== "personas-desc"
+      ) {
         return res.status(400).json({ error: "Orden no permitido." });
       }
     }
@@ -77,28 +83,41 @@ function crearControladorReservas(servicioReservas) {
     if (req.query.pagina !== undefined) {
       // Validamos que no llegue repetido como arreglo
       if (typeof req.query.pagina !== "string") {
-        return res.status(400).json({ error: "La página debe ser un único valor textual." });
+        return res
+          .status(400)
+          .json({ error: "La página debe ser un único valor textual." });
       }
       const p = Number(req.query.pagina);
       if (!Number.isInteger(p) || p < 1 || p > 1000) {
-        return res.status(400).json({ error: "La página debe ser un número entero entre 1 y 1000." });
+        return res.status(400).json({
+          error: "La página debe ser un número entero entre 1 y 1000.",
+        });
       }
       pagina = p;
     }
 
     if (req.query.limite !== undefined) {
       if (typeof req.query.limite !== "string") {
-        return res.status(400).json({ error: "El límite debe ser un único valor textual." });
+        return res
+          .status(400)
+          .json({ error: "El límite debe ser un único valor textual." });
       }
       const l = Number(req.query.limite);
       if (!Number.isInteger(l) || l < 1 || l > 20) {
-        return res.status(400).json({ error: "El límite debe ser un número entero entre 1 y 20." });
+        return res
+          .status(400)
+          .json({ error: "El límite debe ser un número entero entre 1 y 20." });
       }
       limite = l;
     }
 
     // Enviamos los 4 argumentos al servicio
-    const resultado = await servicioReservas.consultar(sala, orden, pagina, limite);
+    const resultado = await servicioReservas.consultar(
+      sala,
+      orden,
+      pagina,
+      limite,
+    );
     res.json(resultado);
   }
 
