@@ -117,24 +117,41 @@ function crearServicioReservasMongo() {
     return resultado.deletedCount === 1; // true si borró algo, false si no
   }
 
-  async function consultar(sala, orden) {
+  async function consultar(sala, orden, pagina, limite) {
     const filtro = {};
     if (sala !== undefined) {
       filtro.sala = sala.trim();
     }
 
-    // Orden predeterminado: por estudiante y desempate por _id
     let ordenMongo = { estudiante: 1, _id: 1 };
-
     if (orden === "personas-asc") {
       ordenMongo = { personas: 1, _id: 1 };
     } else if (orden === "personas-desc") {
       ordenMongo = { personas: -1, _id: 1 };
     }
 
-    // Agregamos .sort(ordenMongo) antes de ejecutar la consulta
-    const documentos = await Reserva.find(filtro).sort(ordenMongo).lean();
-    return documentos.map(representarReserva);
+    // Cálculos de paginación
+    const salto = (pagina - 1) * limite;
+
+    // Contamos el total ANTES de aplicar limit/skip
+    const total = await Reserva.countDocuments(filtro);
+    const paginas = Math.ceil(total / limite);
+
+    // Agregamos skip y limit a la cadena de consulta
+    const documentos = await Reserva.find(filtro)
+      .sort(ordenMongo)
+      .skip(salto)
+      .limit(limite)
+      .lean();
+
+    // Armamos el nuevo formato de respuesta
+    return {
+      datos: documentos.map(representarReserva),
+      pagina: pagina,
+      limite: limite,
+      total: total,
+      paginas: paginas
+    };
   }
 
   return {
