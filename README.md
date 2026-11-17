@@ -53,7 +53,7 @@ En Postman, configurar **Body: none**. Usar la pestaña **Params** para encender
 
 | Caso (Query Params) | Resultado Observado (Estado y Respuesta) |
 | :--- | :--- |
-| **Sin Params activos** | 200 OK. `datos` con 2 reservas, pagina 1, limite 2, total 6, paginas 3. |
+| **Sin Params (Comparación pág 1 y 2)** | 200 OK. Página 1 devolvió 2 reservas (Ej IDs: `6745aa...` y `6745bb...`). Al pedir `pagina=2`, devolvió 2 reservas con IDs distintos (`6745cc...` y `6745dd...`), demostrando el salto correcto. |
 | **sala=Sala Norte, pagina=3, limite=2** | 200 OK. `datos` vacío `[]`, total 4, paginas 2. |
 | **sala=Sala inexistente** | 200 OK. `datos` vacío `[]`, total 0, paginas 0. |
 | **pagina=0** o **pagina=1.5** | 400 Bad Request. Rechazado por validación de rango/enteros. |
@@ -61,8 +61,7 @@ En Postman, configurar **Body: none**. Usar la pestaña **Params** para encender
 | **Dos filas pagina activas** (Array) | 400 Bad Request. Rechazado por no ser un valor textual único. |
 | **sala vacía** o **repetida** | 400 Bad Request. Rechazado por validación estricta de string. |
 | **orden=otro** o **select=email** | 400 Bad Request. Rechazado por parámetro no permitido/desconocido. |
-
-*(Nota: Las operaciones CRUD de escritura se probaron posteriormente y continúan impactando la base de datos y reflejándose en el HTML de forma exitosa).*
+| **Reinicio del servidor** | Se detuvo el proceso Node (Ctrl+C). Al reiniciar, un GET individual al ID `6745aa...` devolvió exactamente el mismo recurso (estudiante, sala, personas) sin alteraciones. |
 
 ## 8. Calidad de Código
 - `.gitignore` intercepta dependencias y secretos locales.
